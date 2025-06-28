@@ -1,0 +1,19 @@
+[package]
+name = "moixllik-game"
+version = "0.1.0"
+edition = "2024"
+
+[profile.release]
+opt-level = "z"
+lto = true
+codegen-units = 1
+panic = "abort"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = ["-Oz", "--strip-debug"]
+
+
+[dependencies]
+egui = { version = "0.31.1", default-features = false }
+egui-macroquad = { version = "0.17.3", default-features = false }
+macroquad = { version = "0.4.14", default-features = false }
