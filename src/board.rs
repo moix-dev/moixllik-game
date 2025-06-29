@@ -21,16 +21,16 @@ pub fn draw(x: f32, y: f32, b: f32) {
 
     draw_rectangle(x + b * 2.0, y + b, b * 3.0, b * 5.0, color);
     draw_rectangle(x + b, y + b * 2.0, b * 5.0, b * 3.0, color);
-
-    mouse_hover(x, y, b);
 }
 
-fn mouse_hover(x: f32, y: f32, b: f32) {
-    let (mx, my) = mouse_position();
-    if (mx >= x && mx <= x + b * 7.0) && (my >= y && my <= y + b * 7.0) {
-        let color = Color::from_rgba(0, 0, 0, 100);
-        let x = ((mx - x) / b).trunc() * b + x;
-        let y = ((my - y) / b).trunc() * b + y;
-        draw_rectangle(x, y, b, b, color);
+pub fn mouse_hover(app_focus: bool, x: f32, y: f32, b: f32) {
+    if !app_focus {
+        let (mx, my) = mouse_position();
+        if (mx >= x && mx <= x + b * 7.0) && (my >= y && my <= y + b * 7.0) {
+            let color = Color::from_rgba(0, 0, 0, 100);
+            let x = ((mx - x) / b).trunc() * b + x;
+            let y = ((my - y) / b).trunc() * b + y;
+            draw_rectangle(x, y, b, b, color);
+        }
     }
 }

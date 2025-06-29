@@ -1,21 +1,27 @@
+use crate::forms;
+use egui::Context;
 use macroquad::prelude::*;
+use std::collections::HashMap;
+
+// #[derive(Default)]
+// pub enum Mode {
+//     #[default]
+//     None,
+//     Map,
+// }
 
 #[derive(Default)]
-pub enum Mode {
-    #[default]
-    Map,
-}
-
-#[derive(Default)]
-pub struct App {
+pub struct App<'a> {
     pub x: f32,
     pub y: f32,
     pub b: f32,
-    pub mode: Mode,
-    pub alert: String,
+    pub focus: bool,
+    // pub mode: Mode,
+    pub alert: &'a str,
+    pub forms: HashMap<&'a str, bool>,
 }
 
-impl App {
+impl App<'_> {
     pub fn start(&mut self, x: f32, y: f32, b: f32) {
         self.x = x;
         self.y = y;
@@ -24,6 +30,7 @@ impl App {
     }
     fn manager(&mut self) {
         egui_macroquad::ui(|egui_ctx| {
+            self.focus = egui_ctx.is_pointer_over_area();
             egui::TopBottomPanel::top("panel-top").show(egui_ctx, |ui| {
                 ui.horizontal(|ui| {
                     ui.heading("MOIXLLIK");
@@ -35,7 +42,9 @@ impl App {
                         ui.label("En construcción");
                     });
                     ui.menu_button("Ayuda", |ui| {
-                        ui.label("En construcción");
+                        if ui.button("Acerca de").clicked() {
+                            self.forms.entry("form-about").or_insert(true);
+                        }
                     });
                 });
             });
@@ -49,10 +58,17 @@ impl App {
                     ui.separator();
                     ui.hyperlink_to("Discord", "https://discord.gg/6me7JYRwS2");
                     ui.separator();
-                    ui.label(egui::RichText::new(&self.alert).color(egui::Color32::RED));
+                    ui.label(egui::RichText::new(self.alert).color(egui::Color32::RED));
                 });
             });
+            self.show_forms(egui_ctx);
         });
         egui_macroquad::draw();
+    }
+
+    fn show_forms(&mut self, egui_ctx: &Context) {
+        if self.forms.contains_key("form-about") {
+            forms::about::show(self, egui_ctx);
+        }
     }
 }
