@@ -1,6 +1,6 @@
-# Moixllik Game
+# ![Moixllik](https://www.moixllik.com)
 
-## Hoja de ruta (Roadmap)
+## Roadmap
 
 * **Jugador**
 * **Modo de juego**

@@ -44,10 +44,10 @@ impl App<'_> {
                     });
                     #[cfg(target_arch = "wasm32")]
                     ui.menu_button("Descargar", |ui| {
-                        ui.hyperlink_to(RichText::new("GNU/Linux").color(color), "https://");
-                        ui.hyperlink_to(RichText::new("Windows").color(color), "https://");
-                        ui.hyperlink_to(RichText::new("Android").color(color), "https://");
-                        ui.hyperlink_to(RichText::new("MacOS").color(color), "https://");
+                        ui.hyperlink_to(RichText::new("GNU/Linux").color(color), "https://github.com/moix-dev/moixllik-game/releases/download/latest/Moixllik.linux.bin");
+                        ui.hyperlink_to(RichText::new("Windows").color(color), "https://github.com/moix-dev/moixllik-game/releases/download/latest/Moixllik.windows.exe");
+                        // ui.hyperlink_to(RichText::new("Android").color(color), "https://github.com/moix-dev/moixllik-game/releases/download/latest/Moixllik.android.apk");
+                        // ui.hyperlink_to(RichText::new("MacOS").color(color), "https://github.com/moix-dev/moixllik-game/releases/download/latest/Moixllik.macos.app");
                     });
                     ui.menu_button("Ayuda", |ui| {
                         if ui.button("Acerca de").clicked() {
