@@ -4,12 +4,16 @@
 
 * **Jugador**
 * **Modo de juego**
+* **Descargar** (Solo en Web)
 * **Ayuda**
   * **Acerca de**
+  * **Reportar errores**
 
 ## Plataformas
 
-* **Web**, ejecuta el juego en cualquier navegador con soporte a `JavaScript`.
+* **Web** (Requiere navegador con soporte a `JavaScript`)
+* **GNU/Linux**
+* **Windows**
 
 ## Enlaces
 

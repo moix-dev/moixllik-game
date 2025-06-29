@@ -1,4 +1,4 @@
-name: Ubuntu
+name: Windows
 permissions:
   contents: write
 on:
@@ -7,14 +7,14 @@ on:
       - main
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
       - name: Build
         run: cargo build --release
 
       - name: Application
-        run: cp ./target/release/moixllik-game ./Moixllik.linux.bin
+        run: cp ./target/release/moixllik-game.exe ./Moixllik.windows.exe
 
       - name: Release
         uses: softprops/action-gh-release@v2
@@ -25,4 +25,4 @@ jobs:
           release_name: "Latest Release"
           draft: false
           prerelease: false
-          files: ./Moixllik.linux.bin
+          files: ./Moixllik.windows.exe

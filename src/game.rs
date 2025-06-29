@@ -1,5 +1,5 @@
 use crate::forms;
-use egui::Context;
+use egui::{Context, RichText};
 use macroquad::prelude::*;
 use std::collections::HashMap;
 
@@ -31,6 +31,7 @@ impl App<'_> {
     fn manager(&mut self) {
         egui_macroquad::ui(|egui_ctx| {
             self.focus = egui_ctx.is_pointer_over_area();
+            let color = egui::Color32::GRAY;
             egui::TopBottomPanel::top("panel-top").show(egui_ctx, |ui| {
                 ui.horizontal(|ui| {
                     ui.heading("MOIXLLIK");
@@ -41,10 +42,21 @@ impl App<'_> {
                     ui.menu_button("Modo de juego", |ui| {
                         ui.label("En construcción");
                     });
+                    #[cfg(target_arch = "wasm32")]
+                    ui.menu_button("Descargar", |ui| {
+                        ui.hyperlink_to(RichText::new("GNU/Linux").color(color), "https://");
+                        ui.hyperlink_to(RichText::new("Windows").color(color), "https://");
+                        ui.hyperlink_to(RichText::new("Android").color(color), "https://");
+                        ui.hyperlink_to(RichText::new("MacOS").color(color), "https://");
+                    });
                     ui.menu_button("Ayuda", |ui| {
                         if ui.button("Acerca de").clicked() {
                             self.forms.entry("form-about").or_insert(true);
                         }
+                        ui.hyperlink_to(
+                            RichText::new("Reportar errores").color(color),
+                            "https://github.com/moix-dev/moixllik-game/issues",
+                        );
                     });
                 });
             });
