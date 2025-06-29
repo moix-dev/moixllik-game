@@ -3,12 +3,15 @@ use egui::{Context, RichText};
 use macroquad::prelude::*;
 use std::collections::HashMap;
 
-// #[derive(Default)]
-// pub enum Mode {
-//     #[default]
-//     None,
-//     Map,
-// }
+#[derive(Default, Debug)]
+pub enum Mode {
+    #[default]
+    Llik,
+    // Map,
+    // Math,
+    // Andes,
+    // Streamer,
+}
 
 #[derive(Default)]
 pub struct App<'a> {
@@ -16,9 +19,17 @@ pub struct App<'a> {
     pub y: f32,
     pub b: f32,
     pub focus: bool,
-    // pub mode: Mode,
+    pub mode: Mode,
     pub alert: &'a str,
     pub forms: HashMap<&'a str, bool>,
+    pub user_session: Option<String>,
+    pub config: Config,
+}
+
+#[derive(Default)]
+pub struct Config {
+    pub disable_board_title: bool,
+    pub disable_marks_scales: bool,
 }
 
 impl App<'_> {
@@ -37,21 +48,58 @@ impl App<'_> {
                     ui.heading("MOIXLLIK");
                     ui.separator();
                     ui.menu_button("Jugador", |ui| {
-                        ui.label("En construcción");
+                        if self.user_session.is_none() {
+                            if ui.button("Iniciar sesión").clicked() {
+                                self.forms.entry("form-user-signin").or_insert(true);
+                            }
+                            if ui.button("Registrarse").clicked() {
+                                self.forms.entry("form-user-signup").or_insert(true);
+                            }
+                        } else {
+                            if ui.button("Mi cuenta").clicked() {
+                                self.forms.entry("form-user").or_insert(true);
+                            }
+                            if ui.button("Cerrar sesión").clicked() {}
+                        }
+                        if ui.button("Eventos").clicked() {
+                            self.forms.entry("form-user-events").or_insert(true);
+                        }
+                        if ui.button("Escuelas").clicked() {
+                            self.forms.entry("form-user-schools").or_insert(true);
+                        }
+                        if ui.button("Rankings").clicked() {
+                            self.forms.entry("form-user-rankings").or_insert(true);
+                        }
                     });
                     ui.menu_button("Modo de juego", |ui| {
-                        ui.label("En construcción");
+                        if ui.button("Moix Map").clicked() {
+                            self.forms.entry("form-mode-map").or_insert(true);
+                        }
+                        if ui.button("Moix Math").clicked() {
+                            self.forms.entry("form-mode-math").or_insert(true);
+                        }
+                        if ui.button("Moix Andes").clicked() {
+                            self.forms.entry("form-mode-andes").or_insert(true);
+                        }
+                        #[cfg(not(target_arch = "wasm32"))]
+                        if ui.button("Moix Streamer").clicked() {
+                            self.forms.entry("form-mode-streamer").or_insert(true);
+                        }
                     });
                     #[cfg(target_arch = "wasm32")]
                     ui.menu_button("Descargar", |ui| {
-                        ui.hyperlink_to(RichText::new("GNU/Linux").color(color), "https://github.com/moix-dev/moixllik-game/releases/download/latest/Moixllik.linux.bin");
-                        ui.hyperlink_to(RichText::new("Windows").color(color), "https://github.com/moix-dev/moixllik-game/releases/download/latest/Moixllik.windows.exe");
-                        // ui.hyperlink_to(RichText::new("Android").color(color), "https://github.com/moix-dev/moixllik-game/releases/download/latest/Moixllik.android.apk");
-                        // ui.hyperlink_to(RichText::new("MacOS").color(color), "https://github.com/moix-dev/moixllik-game/releases/download/latest/Moixllik.macos.app");
+                        ui.hyperlink_to(
+                            RichText::new("Desde GitHub").color(color),
+                            "https://github.com/moix-dev/moixllik-game/releases/tag/latest",
+                        );
                     });
+
                     ui.menu_button("Ayuda", |ui| {
                         if ui.button("Acerca de").clicked() {
                             self.forms.entry("form-about").or_insert(true);
+                        }
+                        if ui.button("Configuración").clicked() {
+                            self.forms.entry("form-config").or_insert(true);
                         }
                         ui.hyperlink_to(
                             RichText::new("Reportar errores").color(color),
@@ -81,6 +129,9 @@ impl App<'_> {
     fn show_forms(&mut self, egui_ctx: &Context) {
         if self.forms.contains_key("form-about") {
             forms::about::show(self, egui_ctx);
+        }
+        if self.forms.contains_key("form-config") {
+            forms::config::show(self, egui_ctx);
         }
     }
 }

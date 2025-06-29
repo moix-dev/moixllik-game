@@ -28,8 +28,16 @@ async fn main() {
         let y = (screen_height() - b * 7.0) / 2.0;
 
         board::draw(x, y, b);
-        board::mouse_hover(app.focus, x, y, b);
 
+        if !app.config.disable_board_title {
+            board::title(x, y, b, format!("Moix {:?}", app.mode).as_str());
+        }
+
+        if !app.config.disable_marks_scales {
+            board::marks_scales(x, y, b);
+        }
+
+        board::mouse_hover(app.focus, x, y, b);
         app.start(x, y, b);
 
         next_frame().await;

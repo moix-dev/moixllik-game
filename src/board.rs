@@ -34,3 +34,44 @@ pub fn mouse_hover(app_focus: bool, x: f32, y: f32, b: f32) {
         }
     }
 }
+
+pub fn title(x: f32, y: f32, b: f32, text: &str) {
+    draw_text(text, x, y - b * 0.35, b * 0.4, WHITE);
+}
+
+pub fn marks_scales(x: f32, y: f32, b: f32) {
+    let color = LIGHTGRAY;
+    let font_size = b * 0.2;
+    let marks = ["a", "b", "c", "d", "e", "f", "g"];
+    for scale in 0..7 {
+        let i = scale as f32;
+        draw_text(
+            marks[6 - scale],
+            x + b * (i + 0.5),
+            y + b * 7.25,
+            font_size,
+            color,
+        );
+        draw_text(
+            (6 - scale).to_string().as_str(),
+            x + b * 7.15,
+            y + b * (i + 0.5),
+            font_size,
+            color,
+        );
+        draw_text(
+            marks[scale],
+            x + b * (i + 0.5),
+            y - b * 0.17,
+            font_size,
+            color,
+        );
+        draw_text(
+            (scale).to_string().as_str(),
+            x - b * 0.25,
+            y + b * (i + 0.5),
+            font_size,
+            color,
+        );
+    }
+}
