@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /
+Allow: /in/
+Allow: /ch/
+Allow: /au/
+Allow: /corpus
+Sitemap: https://www.moixllik.com/sitemap.xml
