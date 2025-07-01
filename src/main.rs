@@ -1,9 +1,12 @@
 mod board;
 mod forms;
 mod game;
+mod modes;
 
 use macroquad::miniquad::conf::Icon;
 use macroquad::prelude::*;
+
+use crate::game::Mode;
 
 fn window_conf() -> Conf {
     Conf {
@@ -29,15 +32,28 @@ async fn main() {
 
         board::draw(x, y, b);
 
+        // Config
         if !app.config.disable_board_title {
-            board::title(x, y, b, format!("Moix {:?}", app.mode).as_str());
+            board::draw_title(x, y, b, app.title);
+        }
+        if app.config.enable_marks_scales {
+            board::draw_marks_scales(x, y, b);
+        }
+        // Modes
+        if !app.focus {
+            board::pointer(&mut app, x, y, b);
+        }
+        match app.mode {
+            Mode::Map => {
+                if app.mode_map.enable_sector_lines {
+                    board::draw_sector_lines(x, y, b);
+                }
+                app.mode_map.draw(x, y, b);
+            }
+            _ => (),
         }
 
-        if !app.config.disable_marks_scales {
-            board::marks_scales(x, y, b);
-        }
-
-        board::mouse_hover(app.focus, x, y, b);
+        // Forms
         app.start(x, y, b);
 
         next_frame().await;

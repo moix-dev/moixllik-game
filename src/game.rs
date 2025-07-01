@@ -1,13 +1,14 @@
 use crate::forms;
+use crate::modes;
 use egui::{Context, RichText};
 use macroquad::prelude::*;
 use std::collections::HashMap;
 
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Eq, PartialEq)]
 pub enum Mode {
     #[default]
     Llik,
-    // Map,
+    Map,
     // Math,
     // Andes,
     // Streamer,
@@ -18,18 +19,24 @@ pub struct App<'a> {
     pub x: f32,
     pub y: f32,
     pub b: f32,
+    pub row: f32,
+    pub column: f32,
     pub focus: bool,
-    pub mode: Mode,
-    pub alert: &'a str,
-    pub forms: HashMap<&'a str, bool>,
-    pub user_session: Option<String>,
+    pub title: &'a str,
+    // Forms
     pub config: Config,
+    pub alert: &'a str,
+    pub user_session: Option<String>,
+    pub forms: HashMap<&'a str, bool>,
+    // Modes
+    pub mode: Mode,
+    pub mode_map: modes::map::Map,
 }
 
 #[derive(Default)]
 pub struct Config {
     pub disable_board_title: bool,
-    pub disable_marks_scales: bool,
+    pub enable_marks_scales: bool,
 }
 
 impl App<'_> {
@@ -61,6 +68,7 @@ impl App<'_> {
                             }
                             if ui.button("Cerrar sesión").clicked() {}
                         }
+                        ui.separator();
                         if ui.button("Eventos").clicked() {
                             self.forms.entry("form-user-events").or_insert(true);
                         }
@@ -73,17 +81,17 @@ impl App<'_> {
                     });
                     ui.menu_button("Modo de juego", |ui| {
                         if ui.button("Moix Map").clicked() {
-                            self.forms.entry("form-mode-map").or_insert(true);
+                            self.forms.entry("form-moix-map").or_insert(true);
                         }
                         if ui.button("Moix Math").clicked() {
-                            self.forms.entry("form-mode-math").or_insert(true);
+                            self.forms.entry("form-moix-math").or_insert(true);
                         }
                         if ui.button("Moix Andes").clicked() {
-                            self.forms.entry("form-mode-andes").or_insert(true);
+                            self.forms.entry("form-moix-andes").or_insert(true);
                         }
                         #[cfg(not(target_arch = "wasm32"))]
                         if ui.button("Moix Streamer").clicked() {
-                            self.forms.entry("form-mode-streamer").or_insert(true);
+                            self.forms.entry("form-moix-streamer").or_insert(true);
                         }
                     });
                     #[cfg(target_arch = "wasm32")]
@@ -112,7 +120,7 @@ impl App<'_> {
                 ui.horizontal(|ui| {
                     ui.hyperlink_to("Web", "https://www.moixllik.com/");
                     ui.separator();
-                    ui.hyperlink_to("Biblioteca", "https://www.moixllik.com/library");
+                    ui.hyperlink_to("Biblioteca", "https://www.moixllik.com/corpus");
                     ui.separator();
                     ui.hyperlink_to("Tienda", "https://ko-fi.com/moixllik/shop");
                     ui.separator();
@@ -127,11 +135,16 @@ impl App<'_> {
     }
 
     fn show_forms(&mut self, egui_ctx: &Context) {
+        // Ayuda
         if self.forms.contains_key("form-about") {
             forms::about::show(self, egui_ctx);
         }
         if self.forms.contains_key("form-config") {
             forms::config::show(self, egui_ctx);
+        }
+        // Modos de juego
+        if self.forms.contains_key("form-moix-map") {
+            forms::mode_map::show(self, egui_ctx);
         }
     }
 }

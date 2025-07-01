@@ -1,5 +1,7 @@
 use macroquad::prelude::*;
 
+use crate::game::{App, Mode};
+
 pub fn draw(x: f32, y: f32, b: f32) {
     draw_rectangle(x - b * 0.10, y - b * 0.10, b * 7.20, b * 7.20, DARKBROWN);
     draw_rectangle(x, y, b * 7.0, b * 7.0, ORANGE);
@@ -23,23 +25,34 @@ pub fn draw(x: f32, y: f32, b: f32) {
     draw_rectangle(x + b, y + b * 2.0, b * 5.0, b * 3.0, color);
 }
 
-pub fn mouse_hover(app_focus: bool, x: f32, y: f32, b: f32) {
-    if !app_focus {
-        let (mx, my) = mouse_position();
-        if (mx >= x && mx <= x + b * 7.0) && (my >= y && my <= y + b * 7.0) {
-            let color = Color::from_rgba(0, 0, 0, 100);
-            let x = ((mx - x) / b).trunc() * b + x;
-            let y = ((my - y) / b).trunc() * b + y;
-            draw_rectangle(x, y, b, b, color);
+pub fn pointer(app: &mut App, x: f32, y: f32, b: f32) {
+    let (mx, my) = mouse_position();
+    if (mx >= x && mx <= x + b * 7.0) && (my >= y && my <= y + b * 7.0) {
+        let color = Color::from_rgba(0, 0, 0, 100);
+        let xx = ((mx - x) / b).trunc();
+        let yy = ((my - y) / b).trunc();
+
+        draw_rectangle(xx * b + x, yy * b + y, b, b, color);
+
+        app.row = xx;
+        app.column = yy;
+
+        if is_mouse_button_released(MouseButton::Left) {
+            match app.mode {
+                Mode::Map => {
+                    app.mode_map.pressed(xx, yy);
+                }
+                _ => (),
+            }
         }
     }
 }
 
-pub fn title(x: f32, y: f32, b: f32, text: &str) {
+pub fn draw_title(x: f32, y: f32, b: f32, text: &str) {
     draw_text(text, x, y - b * 0.35, b * 0.4, WHITE);
 }
 
-pub fn marks_scales(x: f32, y: f32, b: f32) {
+pub fn draw_marks_scales(x: f32, y: f32, b: f32) {
     let color = LIGHTGRAY;
     let font_size = b * 0.2;
     let marks = ["a", "b", "c", "d", "e", "f", "g"];
@@ -74,4 +87,34 @@ pub fn marks_scales(x: f32, y: f32, b: f32) {
             color,
         );
     }
+}
+
+pub fn draw_sector_lines(x: f32, y: f32, b: f32) {
+    let color = DARKBROWN;
+    let line = b * 0.05;
+    draw_line(
+        x + b * 3.0,
+        y + b * 4.0,
+        x + b * 7.0,
+        y + b * 4.0,
+        line,
+        color,
+    );
+    draw_line(
+        x + b * 3.0,
+        y + b * 3.0,
+        x + b * 3.0,
+        y + b * 7.0,
+        line,
+        color,
+    );
+    draw_line(x, y + b * 3.0, x + b * 4.0, y + b * 3.0, line, color);
+    draw_line(x + b * 4.0, y, x + b * 4.0, y + b * 4.0, line, color);
+}
+
+pub fn draw_piece_big(row: f32, column: f32, x: f32, y: f32, b: f32, color: Color) {
+    let x = x + b * (row + 0.5);
+    let y = y + b * (column + 0.5);
+    draw_circle(x, y, b * 0.42, DARKBROWN);
+    draw_circle(x, y, b * 0.4, color);
 }

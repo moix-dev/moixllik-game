@@ -18,13 +18,15 @@ Los modos de juego son una reinterpretación del juego o herramienta andina yupa
 
 Los modos soportados:
 
-- Modo Mapa: sirve para enriquecer las historias de la biblioteca.
+- Moix Map, es el modo mapa que sirve para enriquecer las historias de la biblioteca.
 
-- Modo Matemático: es una versión digital de la yupana.
+- Moix Math, es el modo matemático funciona como una versión digital de la yupana.
 
-- Modo Andes: es un juego de tablero enfocado en la estrategia.
+- Moix Andes, es un modo de juego en el tablero enfocado en la estrategia.
 "#
         );
+        #[cfg(not(target_arch = "wasm32"))]
+        ui.label("- Moix Streamer, es un modo que desbloquea la interacción con el chat de Twitch.");
         ui.separator();
         ui.vertical_centered(|ui| {
             if ui.button("Cerrar").clicked() {
