@@ -3,5 +3,4 @@ Disallow: /
 Allow: /in/
 Allow: /ch/
 Allow: /au/
-Allow: /corpus
-Sitemap: https://www.moixllik.com/sitemap.xml
+Sitemap: https://www.moixllik.com/sitemap.txt

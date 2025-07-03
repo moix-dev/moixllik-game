@@ -2,6 +2,11 @@ use macroquad::prelude::*;
 
 use crate::game::{App, Mode};
 
+pub fn show_fps(x: f32, y: f32, b: f32) {
+    let fps = format!("FPS: {}", get_fps());
+    draw_text(fps.as_str(), x + b * 6.0, y + b * 7.5, b * 0.3, WHITE);
+}
+
 pub fn draw(x: f32, y: f32, b: f32) {
     draw_rectangle(x - b * 0.10, y - b * 0.10, b * 7.20, b * 7.20, DARKBROWN);
     draw_rectangle(x, y, b * 7.0, b * 7.0, ORANGE);
@@ -34,13 +39,13 @@ pub fn pointer(app: &mut App, x: f32, y: f32, b: f32) {
 
         draw_rectangle(xx * b + x, yy * b + y, b, b, color);
 
-        app.row = xx;
-        app.column = yy;
+        app.row = xx as u8;
+        app.column = yy as u8;
 
         if is_mouse_button_released(MouseButton::Left) {
             match app.mode {
                 Mode::Map => {
-                    app.mode_map.pressed(xx, yy);
+                    app.mode_map.pressed(app.row, app.column);
                 }
                 _ => (),
             }
@@ -49,7 +54,7 @@ pub fn pointer(app: &mut App, x: f32, y: f32, b: f32) {
 }
 
 pub fn draw_title(x: f32, y: f32, b: f32, text: &str) {
-    draw_text(text, x, y - b * 0.35, b * 0.4, WHITE);
+    draw_text(text, x, y - b * 0.35, b * 0.3, WHITE);
 }
 
 pub fn draw_marks_scales(x: f32, y: f32, b: f32) {

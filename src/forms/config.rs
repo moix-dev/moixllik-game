@@ -7,16 +7,17 @@ pub fn show(app: &mut App, egui_ctx: &Context) {
             *app = App::default();
         }
         ui.separator();
+        ui.checkbox(&mut app.config.enable_show_fps, "Mostrar FPS.");
         ui.checkbox(&mut app.config.disable_board_title, "Desactivar el título.");
         ui.checkbox(
             &mut app.config.enable_marks_scales,
-            "Activar marcas y escalas.",
+            "Desactivar marcas y escalas.",
         );
 
         ui.separator();
         ui.vertical_centered(|ui| {
             if ui.button("Cerrar").clicked() {
-                app.forms.remove("form-config");
+                app.forms.remove(&41);
             }
         });
     });

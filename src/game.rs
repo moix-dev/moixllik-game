@@ -7,7 +7,7 @@ use std::collections::HashMap;
 #[derive(Default, Debug, Eq, PartialEq)]
 pub enum Mode {
     #[default]
-    Llik,
+    None,
     Map,
     // Math,
     // Andes,
@@ -15,19 +15,19 @@ pub enum Mode {
 }
 
 #[derive(Default)]
-pub struct App<'a> {
+pub struct App {
     pub x: f32,
     pub y: f32,
     pub b: f32,
-    pub row: f32,
-    pub column: f32,
+    pub row: u8,
+    pub column: u8,
     pub focus: bool,
-    pub title: &'a str,
+    pub title: String,
     // Forms
     pub config: Config,
-    pub alert: &'a str,
-    pub user_session: Option<String>,
-    pub forms: HashMap<&'a str, bool>,
+    pub alert: String,
+    pub user_session: String,
+    pub forms: HashMap<u8, bool>,
     // Modes
     pub mode: Mode,
     pub mode_map: modes::map::Map,
@@ -35,11 +35,12 @@ pub struct App<'a> {
 
 #[derive(Default)]
 pub struct Config {
+    pub enable_show_fps: bool,
     pub disable_board_title: bool,
     pub enable_marks_scales: bool,
 }
 
-impl App<'_> {
+impl App {
     pub fn start(&mut self, x: f32, y: f32, b: f32) {
         self.x = x;
         self.y = y;
@@ -55,47 +56,50 @@ impl App<'_> {
                     ui.heading("MOIXLLIK");
                     ui.separator();
                     ui.menu_button("Jugador", |ui| {
-                        if self.user_session.is_none() {
+                        // Id: 1X
+                        if self.user_session.len() == 0 {
                             if ui.button("Iniciar sesión").clicked() {
-                                self.forms.entry("form-user-signin").or_insert(true);
+                                self.forms.entry(10).or_insert(true);
                             }
                             if ui.button("Registrarse").clicked() {
-                                self.forms.entry("form-user-signup").or_insert(true);
+                                self.forms.entry(11).or_insert(true);
                             }
                         } else {
                             if ui.button("Mi cuenta").clicked() {
-                                self.forms.entry("form-user").or_insert(true);
+                                self.forms.entry(12).or_insert(true);
                             }
                             if ui.button("Cerrar sesión").clicked() {}
                         }
                         ui.separator();
                         if ui.button("Eventos").clicked() {
-                            self.forms.entry("form-user-events").or_insert(true);
+                            self.forms.entry(13).or_insert(true);
                         }
                         if ui.button("Escuelas").clicked() {
-                            self.forms.entry("form-user-schools").or_insert(true);
+                            self.forms.entry(14).or_insert(true);
                         }
                         if ui.button("Rankings").clicked() {
-                            self.forms.entry("form-user-rankings").or_insert(true);
+                            self.forms.entry(15).or_insert(true);
                         }
                     });
                     ui.menu_button("Modo de juego", |ui| {
-                        if ui.button("Moix Map").clicked() {
-                            self.forms.entry("form-moix-map").or_insert(true);
+                        // Id: 2X
+                        if ui.button("Modo Mapa").clicked() {
+                            self.forms.entry(20).or_insert(true);
                         }
-                        if ui.button("Moix Math").clicked() {
-                            self.forms.entry("form-moix-math").or_insert(true);
+                        if ui.button("Mode Matemático").clicked() {
+                            self.forms.entry(21).or_insert(true);
                         }
-                        if ui.button("Moix Andes").clicked() {
-                            self.forms.entry("form-moix-andes").or_insert(true);
+                        if ui.button("Modo Andes").clicked() {
+                            self.forms.entry(22).or_insert(true);
                         }
                         #[cfg(not(target_arch = "wasm32"))]
-                        if ui.button("Moix Streamer").clicked() {
-                            self.forms.entry("form-moix-streamer").or_insert(true);
+                        if ui.button("Modo Streamer").clicked() {
+                            self.forms.entry(23).or_insert(true);
                         }
                     });
                     #[cfg(target_arch = "wasm32")]
                     ui.menu_button("Descargar", |ui| {
+                        // Id: 3X
                         ui.hyperlink_to(
                             RichText::new("Desde GitHub").color(color),
                             "https://github.com/moix-dev/moixllik-game/releases/tag/latest",
@@ -103,11 +107,12 @@ impl App<'_> {
                     });
 
                     ui.menu_button("Ayuda", |ui| {
+                        // Id: 4X
                         if ui.button("Acerca de").clicked() {
-                            self.forms.entry("form-about").or_insert(true);
+                            self.forms.entry(40).or_insert(true);
                         }
                         if ui.button("Configuración").clicked() {
-                            self.forms.entry("form-config").or_insert(true);
+                            self.forms.entry(41).or_insert(true);
                         }
                         ui.hyperlink_to(
                             RichText::new("Reportar errores").color(color),
@@ -126,7 +131,7 @@ impl App<'_> {
                     ui.separator();
                     ui.hyperlink_to("Discord", "https://discord.gg/6me7JYRwS2");
                     ui.separator();
-                    ui.label(egui::RichText::new(self.alert).color(egui::Color32::RED));
+                    ui.label(egui::RichText::new(self.alert.as_str()).color(egui::Color32::RED));
                 });
             });
             self.show_forms(egui_ctx);
@@ -135,16 +140,16 @@ impl App<'_> {
     }
 
     fn show_forms(&mut self, egui_ctx: &Context) {
-        // Ayuda
-        if self.forms.contains_key("form-about") {
+        // 2X: Modos de juego
+        if self.forms.contains_key(&20) {
+            forms::mode_map::show(self, egui_ctx);
+        }
+        // 4X: Ayuda
+        if self.forms.contains_key(&40) {
             forms::about::show(self, egui_ctx);
         }
-        if self.forms.contains_key("form-config") {
+        if self.forms.contains_key(&41) {
             forms::config::show(self, egui_ctx);
-        }
-        // Modos de juego
-        if self.forms.contains_key("form-moix-map") {
-            forms::mode_map::show(self, egui_ctx);
         }
     }
 }

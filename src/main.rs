@@ -26,6 +26,7 @@ async fn main() {
     let mut app = game::App::default();
     loop {
         clear_background(BROWN);
+
         let b = screen_width().min(screen_height()) / 9.0;
         let x = (screen_width() - b * 7.0) / 2.0;
         let y = (screen_height() - b * 7.0) / 2.0;
@@ -33,10 +34,13 @@ async fn main() {
         board::draw(x, y, b);
 
         // Config
-        if !app.config.disable_board_title {
-            board::draw_title(x, y, b, app.title);
+        if app.config.enable_show_fps {
+            board::show_fps(x, y, b);
         }
-        if app.config.enable_marks_scales {
+        if !app.config.disable_board_title {
+            board::draw_title(x, y, b, app.title.as_str());
+        }
+        if !app.config.enable_marks_scales {
             board::draw_marks_scales(x, y, b);
         }
         // Modes

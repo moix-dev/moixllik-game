@@ -1,18 +1,19 @@
 use crate::game::{App, Mode};
-use crate::modes::map::get_location;
-use egui::Context;
+use crate::modes::map::{Map, get_faction_index, get_location, get_sector_index};
+use egui::{Context, RichText};
 
 #[derive(Default)]
 struct Info {
+    gloss: String,
     sector: String,
     faction: String,
     location: String,
-    gloss: String,
 }
 
 pub fn show(app: &mut App, egui_ctx: &Context) {
-    egui::Window::new("Moix Map").show(egui_ctx, |ui| {
+    egui::Window::new("Modo Mapa").show(egui_ctx, |ui| {
         if app.mode == Mode::Map {
+            app.title = app.mode_map.invader.track_message.clone();
             let info = get_info(app.row, app.column);
             ui.columns(2, |columns| {
                 columns[0].horizontal_wrapped(|ui| {
@@ -33,14 +34,16 @@ pub fn show(app: &mut App, egui_ctx: &Context) {
             });
             ui.label(info.gloss);
             ui.separator();
-            ui.checkbox(
-                &mut app.mode_map.enable_sector_lines,
-                "Dividir en sectores.",
-            );
-            ui.checkbox(
-                &mut app.mode_map.enable_faction_colors,
-                "Usar color de la facción.",
-            );
+            ui.collapsing("Configurar", |ui| {
+                ui.checkbox(
+                    &mut app.mode_map.enable_sector_lines,
+                    "Dividir en sectores.",
+                );
+                ui.checkbox(
+                    &mut app.mode_map.enable_faction_colors,
+                    "Activar colores de facción.",
+                );
+            });
             ui.separator();
             ui.collapsing("Registro", |ui| {
                 ui.horizontal(|ui| {
@@ -48,8 +51,7 @@ pub fn show(app: &mut App, egui_ctx: &Context) {
                         egui_ctx.copy_text(app.mode_map.log_text.clone());
                     }
                     if ui.button("Limpiar").clicked() {
-                        app.mode_map.pieces.clear();
-                        app.mode_map.log.clear();
+                        app.mode_map.clear();
                     }
                     if ui.button("Ver").clicked() {
                         app.mode_map.parser();
@@ -58,58 +60,51 @@ pub fn show(app: &mut App, egui_ctx: &Context) {
                 ui.text_edit_multiline(&mut app.mode_map.log_text);
             });
         } else {
-            if ui.button("Iniciar modo de juego").clicked() {
+            if ui.button("¡Comenzar a jugar!").clicked() {
                 app.mode = Mode::Map;
-                app.title = "Modo Map";
+                app.mode_map.invader.random_move(vec![]);
+                app.mode_map.invader.show_track(0, 0);
             }
-            ui.label(format!("Modo actual: Moix {:?}", app.mode));
+            ui.separator();
+            ui.label(
+                RichText::new(
+                    r#"- El juego consiste en buscar al invasor.
+- Se darán pistas de los lugares que rodean al invasor.
+- Al atrapar al invasor se moverá y ganas un punto."#,
+                )
+                .size(18.0),
+            );
         }
         ui.separator();
         ui.vertical_centered(|ui| {
             if ui.button("Cerrar").clicked() {
-                app.forms.remove("form-moix-map");
+                app.mode = Mode::None;
+                app.mode_map = Map::default();
+                app.forms.remove(&20);
             }
         });
     });
 }
 
-fn get_info(row: f32, column: f32) -> Info {
-    let (sector_index, sector) = get_sector(row, column);
-    let (faction_index, faction) = get_faction(row, column);
-    let location = get_location(row, column);
-    let gloss = get_gloss(sector_index, faction_index);
+fn get_info(row: u8, column: u8) -> Info {
+    let sector_index = get_sector_index(row, column);
+    let faction_index = get_faction_index(row, column);
     Info {
-        sector,
-        faction,
-        location,
-        gloss,
+        sector: get_sector(sector_index),
+        faction: get_faction(faction_index),
+        location: get_location(row, column),
+        gloss: get_gloss(sector_index, faction_index),
     }
 }
 
-fn get_sector(row: f32, column: f32) -> (usize, String) {
+fn get_sector(index: usize) -> String {
     let sectors = ["X", "I", "II", "III", "IV"];
-    let index = match (row as usize, column as usize) {
-        (r, c) if (3..7).contains(&r) && (4..7).contains(&c) => 1,
-        (r, c) if (0..3).contains(&r) && (3..7).contains(&c) => 2,
-        (r, c) if (0..4).contains(&r) && (0..3).contains(&c) => 3,
-        (r, c) if (4..7).contains(&r) && (0..4).contains(&c) => 4,
-        _ => 0,
-    };
-    (index, format!("{}", sectors[index]))
+    sectors[index].to_string()
 }
 
-fn get_faction(row: f32, column: f32) -> (usize, String) {
+fn get_faction(index: usize) -> String {
     let factions = ["Rojo", "Azul", "Amarillo", "Verde", "Magenta", "Cian"];
-    let index = match (row as usize, column as usize) {
-        (3, 3) => 5,
-        (r, c) if (2..5).contains(&r) && (2..5).contains(&c) => 4,
-        (r, c) if (2..5).contains(&r) && (1..6).contains(&c) => 3,
-        (r, c) if (1..6).contains(&r) && (2..5).contains(&c) => 3,
-        (0, 3) | (3, 6) | (3, 0) | (6, 3) => 2,
-        (0, 0) | (0, 6) | (6, 0) | (6, 6) => 0,
-        _ => 1,
-    };
-    (index, format!("{}", factions[index]))
+    factions[index].to_string()
 }
 
 fn get_gloss(sector_index: usize, faction_index: usize) -> String {
@@ -126,7 +121,7 @@ Tienen como símbolo tradicional a dos serpientes que representan al sol y la lu
         "En el sector Anti tienen como símbolos tradicionales al Jaguar y Caimán.",
     ];
     let factions = [
-        "En la facción de Rojo, son cercanos a las islas o volcanes.",
+        "En la facción de Rojo, son cercanos a los volcanes.",
         "En la facción de Azul, son cercanos a los mares.",
         "En la facción de Amarillo, son cercanos a los desiertos.",
         "En la facción de Verde, son cercanos a los bosques.",
