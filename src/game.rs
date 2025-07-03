@@ -2,17 +2,6 @@ use crate::forms;
 use crate::modes;
 use egui::{Context, RichText};
 use macroquad::prelude::*;
-use std::collections::HashMap;
-
-#[derive(Default, Debug, Eq, PartialEq)]
-pub enum Mode {
-    #[default]
-    None,
-    Map,
-    // Math,
-    // Andes,
-    // Streamer,
-}
 
 #[derive(Default)]
 pub struct App {
@@ -27,9 +16,9 @@ pub struct App {
     pub config: Config,
     pub alert: String,
     pub user_session: String,
-    pub forms: HashMap<u8, bool>,
+    pub forms: u64, // max_forms = uX - 1
     // Modes
-    pub mode: Mode,
+    pub mode: u8,
     pub mode_map: modes::map::Map,
 }
 
@@ -41,6 +30,18 @@ pub struct Config {
 }
 
 impl App {
+    pub fn open_form(&mut self, id: u8) {
+        self.forms |= 1 << id;
+    }
+    pub fn close_form(&mut self, id: u8) {
+        self.forms &= !(1 << id);
+    }
+    // pub fn toggle_form(&mut self, id: u8) {
+    //     self.forms ^= 1 << id;
+    // }
+    pub fn is_open_form(&mut self, id: u8) -> bool {
+        (self.forms & (1 << id)) != 0
+    }
     pub fn start(&mut self, x: f32, y: f32, b: f32) {
         self.x = x;
         self.y = y;
@@ -59,42 +60,42 @@ impl App {
                         // Id: 1X
                         if self.user_session.len() == 0 {
                             if ui.button("Iniciar sesión").clicked() {
-                                self.forms.entry(10).or_insert(true);
+                                self.open_form(10);
                             }
                             if ui.button("Registrarse").clicked() {
-                                self.forms.entry(11).or_insert(true);
+                                self.open_form(11);
                             }
                         } else {
                             if ui.button("Mi cuenta").clicked() {
-                                self.forms.entry(12).or_insert(true);
+                                self.open_form(12);
                             }
                             if ui.button("Cerrar sesión").clicked() {}
                         }
                         ui.separator();
                         if ui.button("Eventos").clicked() {
-                            self.forms.entry(13).or_insert(true);
+                            self.open_form(13);
                         }
                         if ui.button("Escuelas").clicked() {
-                            self.forms.entry(14).or_insert(true);
+                            self.open_form(14);
                         }
                         if ui.button("Rankings").clicked() {
-                            self.forms.entry(15).or_insert(true);
+                            self.open_form(15);
                         }
                     });
                     ui.menu_button("Modo de juego", |ui| {
                         // Id: 2X
                         if ui.button("Modo Mapa").clicked() {
-                            self.forms.entry(20).or_insert(true);
+                            self.open_form(20);
                         }
                         if ui.button("Mode Matemático").clicked() {
-                            self.forms.entry(21).or_insert(true);
+                            self.open_form(21);
                         }
                         if ui.button("Modo Andes").clicked() {
-                            self.forms.entry(22).or_insert(true);
+                            self.open_form(22);
                         }
                         #[cfg(not(target_arch = "wasm32"))]
                         if ui.button("Modo Streamer").clicked() {
-                            self.forms.entry(23).or_insert(true);
+                            self.open_form(23);
                         }
                     });
                     #[cfg(target_arch = "wasm32")]
@@ -109,10 +110,10 @@ impl App {
                     ui.menu_button("Ayuda", |ui| {
                         // Id: 4X
                         if ui.button("Acerca de").clicked() {
-                            self.forms.entry(40).or_insert(true);
+                            self.open_form(40);
                         }
                         if ui.button("Configuración").clicked() {
-                            self.forms.entry(41).or_insert(true);
+                            self.open_form(41);
                         }
                         ui.hyperlink_to(
                             RichText::new("Reportar errores").color(color),
@@ -141,14 +142,14 @@ impl App {
 
     fn show_forms(&mut self, egui_ctx: &Context) {
         // 2X: Modos de juego
-        if self.forms.contains_key(&20) {
+        if self.is_open_form(20) {
             forms::mode_map::show(self, egui_ctx);
         }
         // 4X: Ayuda
-        if self.forms.contains_key(&40) {
+        if self.is_open_form(40) {
             forms::about::show(self, egui_ctx);
         }
-        if self.forms.contains_key(&41) {
+        if self.is_open_form(41) {
             forms::config::show(self, egui_ctx);
         }
     }

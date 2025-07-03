@@ -1,15 +1,14 @@
-use crate::board;
-use macroquad::prelude::*;
-use std::collections::HashMap;
+use crate::board::draw_piece_big;
+use macroquad::{prelude::*, rand::ChooseRandom};
 
 #[derive(Default, Debug)]
 pub struct Map {
     pub invader: Invader,
     pub enable_sector_lines: bool,
     pub enable_faction_colors: bool,
-    pub pieces: HashMap<u8, Piece>,
+    pub board: u64, // uX - 1
     // LOG
-    pub log: Vec<String>,
+    pub log: Vec<[u8; 3]>,
     pub log_text: String,
 }
 
@@ -18,62 +17,60 @@ pub struct Invader {
     pub row: u8,
     pub column: u8,
     pub points: u16,
-    // Track
-    pub track_row: i8,
-    pub track_column: i8,
-    pub track_count: u16,
-    pub track_message: String,
-}
-
-#[derive(Default, Debug, Clone)]
-pub struct Piece {
-    row: u8,
-    column: u8,
+    pub message: String,
 }
 
 impl Map {
+    fn set(&mut self, row: u8, column: u8, value: bool) {
+        let mask = row * 7 + column;
+        if value {
+            self.board |= 1 << mask;
+        } else {
+            self.board &= !(1 << mask);
+        }
+    }
+    fn get(&mut self, row: u8, column: u8) -> bool {
+        self.board & (1 << (row * 7 + column)) != 0
+    }
     pub fn clear(&mut self) {
         self.log.clear();
-        self.pieces.clear();
+        self.board = 0;
         self.invader = Invader::default();
     }
     pub fn draw(&mut self, x: f32, y: f32, b: f32) {
-        for (_key, piece) in self.pieces.iter() {
-            let color = if self.enable_faction_colors {
-                get_faction_color(piece.row, piece.column)
-            } else {
-                WHITE
-            };
-            board::draw_piece_big(piece.row as f32, piece.column as f32, x, y, b, color);
+        for i in 0..49 {
+            let row = i / 7;
+            let column = i % 7;
+            if self.get(row, column) {
+                let color = if self.enable_faction_colors {
+                    get_faction_color(row, column)
+                } else {
+                    WHITE
+                };
+                draw_piece_big(row, column, x, y, b, color);
+            }
         }
     }
     pub fn pressed(&mut self, row: u8, column: u8) {
-        let log_len = self.log.len() + 1;
-        let key = row * column;
-        if self.pieces.contains_key(&key) {
-            self.action_remove(log_len, key, row, column);
+        if self.get(row, column) {
+            self.action_remove(row, column);
         } else {
-            self.action_add(log_len, key, row, column);
+            self.action_add(row, column);
             if self.invader.row == row && self.invader.column == column {
-                let pieces = self.pieces.keys().collect::<Vec<&u8>>();
                 self.invader.points += 1;
-                self.invader.random_move(pieces);
+                self.invader.random_move(&self.board);
             }
         }
-        self.invader.show_track(log_len, self.pieces.len());
-
-        // LOG
-        self.log_text = self.log.join("; ");
+        self.invader.show_track(self.log.len(), &self.board);
+        self.parser_log();
     }
-    fn action_add(&mut self, log_len: usize, key: u8, row: u8, column: u8) {
-        self.pieces.insert(key, Piece { row, column });
-        let location = get_location(row, column);
-        self.log.push(format!("{}.{}", log_len, location));
+    fn action_add(&mut self, row: u8, column: u8) {
+        self.set(row, column, true);
+        self.log.push([row, column, 0]);
     }
-    fn action_remove(&mut self, log_len: usize, key: u8, row: u8, column: u8) {
-        self.pieces.remove(&key);
-        let location = get_location(row, column);
-        self.log.push(format!("{}.{}+", log_len, location));
+    fn action_remove(&mut self, row: u8, column: u8) {
+        self.set(row, column, false);
+        self.log.push([row, column, 1]);
     }
     pub fn parser(&mut self) {
         let log_text = self.log_text.clone();
@@ -82,65 +79,68 @@ impl Map {
         while let Some(step) = steps.next() {
             let parts = step.splitn(2, '.').collect::<Vec<_>>();
             if parts.len() == 2 {
-                let log_len = parts[0].parse::<usize>().unwrap_or(0);
                 let data = parts[1];
                 let mark = data.chars().nth(0).unwrap();
                 let scale = data.chars().nth(1).unwrap();
                 let row = 6 - "abcdefg".find(mark).unwrap_or(0) as u8;
                 let column = 6 - scale.to_digit(10).unwrap_or(0) as u8;
-                let key = row * column;
                 match data.chars().nth(2).unwrap_or(' ') {
-                    '+' => self.action_remove(log_len, key, row, column),
-                    _ => self.action_add(log_len, key, row, column),
+                    '+' => self.action_remove(row, column),
+                    _ => self.action_add(row, column),
                 }
             }
         }
+    }
+    pub fn parser_log(&mut self) {
+        self.log_text = self
+            .log
+            .iter()
+            .enumerate()
+            .map(|(index, step)| {
+                format!(
+                    "{}.{}{}",
+                    index + 1,
+                    get_location(step[0], step[1]),
+                    if step[2] == 1 { "+" } else { "" }
+                )
+            })
+            .collect::<Vec<String>>()
+            .join("; ");
     }
 }
 
 impl Invader {
-    pub fn random_move(&mut self, pieces: Vec<&u8>) {
-        rand::srand(miniquad::date::now() as u64);
-        loop {
-            if pieces.len() == 49 {
-                return;
-            }
-            let row: u8 = rand::gen_range(0, 7);
-            let column: u8 = rand::gen_range(0, 7);
-            let key = row * column;
-            if !pieces.iter().any(|&x| x == &key) {
-                self.row = row;
-                self.column = column;
-                return;
+    pub fn random_move(&mut self, board: &u64) {
+        if board == &((1u64 << 49) - 1) {
+            return;
+        }
+        let mut slots: Vec<(u8, u8)> = vec![];
+        for x in 0..49 {
+            if (board & (1 << x)) == 0 {
+                let row = x / 7;
+                let column = x % 7;
+                slots.push((row, column));
             }
         }
-    }
-    pub fn show_track(&mut self, turn: usize, pieces_len: usize) {
+
         rand::srand(miniquad::date::now() as u64);
-        if pieces_len == 49 {
-            self.track_message = format!("Puntaje: {} / {}", self.points, turn);
+        if let Some((row, column)) = slots.choose() {
+            self.row = *row;
+            self.column = *column;
+        }
+    }
+    pub fn show_track(&mut self, log_len: usize, board: &u64) {
+        if board == &((1u64 << 49) - 1) {
+            self.message = format!("Puntaje: {} / {}", self.points, log_len);
         } else {
-            let vals = [-1, 1];
-            let mut row = vals[rand::gen_range(0, 2)];
-            let mut column = vals[rand::gen_range(0, 2)];
-            if row == self.track_row && column == self.track_column {
-                if row == self.track_row {
-                    row *= -1;
-                } else if column == self.track_column {
-                    column *= -1;
-                }
-            }
-            self.track_row = row;
-            self.track_column = column;
+            rand::srand(miniquad::date::now() as u64);
+            let row = (self.row as i8 + rand::gen_range(0, 3) - 1).clamp(0, 6);
+            let column = (self.column as i8 + rand::gen_range(0, 3) - 1).clamp(0, 6);
             let sector = get_sector_symbol(self.row, self.column);
-            let faction = get_faction_symbol(
-                (self.row as i8 + self.track_row).clamp(0, 6) as u8,
-                (self.column as i8 + self.track_column).clamp(0, 6) as u8,
-            );
-            self.track_count += 1;
-            self.track_message = format!(
-                "Puntaje: {} / {} | Pista {}: {}, {}",
-                self.points, turn, self.track_count, sector, faction,
+            let faction = get_faction_symbol(row as u8, column as u8);
+            self.message = format!(
+                "Puntaje: {} / {} | Pista: {}, {}.",
+                self.points, log_len, sector, faction
             );
         }
     }
@@ -152,7 +152,7 @@ pub fn get_location(row: u8, column: u8) -> String {
     format!("{}{}", mark, scale)
 }
 
-pub fn get_sector_index(row: u8, column: u8) -> usize {
+pub fn get_sector_index(row: u8, column: u8) -> u8 {
     match (row, column) {
         (r, c) if (3..7).contains(&r) && (4..7).contains(&c) => 1,
         (r, c) if (0..3).contains(&r) && (3..7).contains(&c) => 2,
@@ -162,7 +162,7 @@ pub fn get_sector_index(row: u8, column: u8) -> usize {
     }
 }
 
-pub fn get_faction_index(row: u8, column: u8) -> usize {
+pub fn get_faction_index(row: u8, column: u8) -> u8 {
     match (row, column) {
         (3, 3) => 5,
         (r, c) if (2..5).contains(&r) && (2..5).contains(&c) => 4,
@@ -184,7 +184,7 @@ fn get_faction_color(row: u8, column: u8) -> Color {
         Color::from_hex(0x00FFFF),
     ];
     let index = get_faction_index(row, column);
-    factions[index]
+    factions[index as usize]
 }
 
 fn get_sector_symbol(row: u8, column: u8) -> &'static str {
@@ -196,7 +196,7 @@ fn get_sector_symbol(row: u8, column: u8) -> &'static str {
         ["Anti", "Jaguar", "Caimán"],
     ];
     let index = get_sector_index(row, column);
-    let sector = sectors[index];
+    let sector = sectors[index as usize];
     sector[rand::gen_range(0, sector.len())]
 }
 
@@ -210,6 +210,6 @@ fn get_faction_symbol(row: u8, column: u8) -> &'static str {
         ["Cian", "Estrellas", "Cielo"],
     ];
     let index = get_faction_index(row, column);
-    let faction = factions[index];
+    let faction = factions[index as usize];
     faction[rand::gen_range(0, faction.len())]
 }

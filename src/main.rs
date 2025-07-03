@@ -6,8 +6,6 @@ mod modes;
 use macroquad::miniquad::conf::Icon;
 use macroquad::prelude::*;
 
-use crate::game::Mode;
-
 fn window_conf() -> Conf {
     Conf {
         window_title: "Moixllik".to_string(),
@@ -48,7 +46,8 @@ async fn main() {
             board::pointer(&mut app, x, y, b);
         }
         match app.mode {
-            Mode::Map => {
+            1 => {
+                app.title = app.mode_map.invader.message.clone();
                 if app.mode_map.enable_sector_lines {
                     board::draw_sector_lines(x, y, b);
                 }

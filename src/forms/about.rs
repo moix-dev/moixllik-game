@@ -30,7 +30,7 @@ Los modos soportados:
         ui.separator();
         ui.vertical_centered(|ui| {
             if ui.button("Cerrar").clicked() {
-                app.forms.remove(&40);
+                app.close_form(40);
             }
         });
     });

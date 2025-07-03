@@ -17,7 +17,7 @@ pub fn show(app: &mut App, egui_ctx: &Context) {
         ui.separator();
         ui.vertical_centered(|ui| {
             if ui.button("Cerrar").clicked() {
-                app.forms.remove(&41);
+                app.close_form(41);
             }
         });
     });

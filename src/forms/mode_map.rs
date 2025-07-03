@@ -1,5 +1,5 @@
-use crate::game::{App, Mode};
-use crate::modes::map::{Map, get_faction_index, get_location, get_sector_index};
+use crate::game::App;
+use crate::modes::map::{get_faction_index, get_location, get_sector_index};
 use egui::{Context, RichText};
 
 #[derive(Default)]
@@ -12,8 +12,11 @@ struct Info {
 
 pub fn show(app: &mut App, egui_ctx: &Context) {
     egui::Window::new("Modo Mapa").show(egui_ctx, |ui| {
-        if app.mode == Mode::Map {
-            app.title = app.mode_map.invader.track_message.clone();
+        if app.mode == 1 {
+            if ui.button("Finalizar modo de juego").clicked() {
+                app.mode = 0;
+            }
+            ui.separator();
             let info = get_info(app.row, app.column);
             ui.columns(2, |columns| {
                 columns[0].horizontal_wrapped(|ui| {
@@ -61,16 +64,17 @@ pub fn show(app: &mut App, egui_ctx: &Context) {
             });
         } else {
             if ui.button("¡Comenzar a jugar!").clicked() {
-                app.mode = Mode::Map;
-                app.mode_map.invader.random_move(vec![]);
-                app.mode_map.invader.show_track(0, 0);
+                app.mode = 1;
+                app.mode_map.clear();
+                app.mode_map.invader.random_move(&0);
+                app.mode_map.invader.show_track(0, &0);
             }
             ui.separator();
             ui.label(
                 RichText::new(
                     r#"- El juego consiste en buscar al invasor.
 - Se darán pistas de los lugares que rodean al invasor.
-- Al atrapar al invasor se moverá y ganas un punto."#,
+- Cuando captures al invasor, este se moverá y ganarás un punto."#,
                 )
                 .size(18.0),
             );
@@ -78,9 +82,7 @@ pub fn show(app: &mut App, egui_ctx: &Context) {
         ui.separator();
         ui.vertical_centered(|ui| {
             if ui.button("Cerrar").clicked() {
-                app.mode = Mode::None;
-                app.mode_map = Map::default();
-                app.forms.remove(&20);
+                app.close_form(20);
             }
         });
     });
@@ -97,17 +99,17 @@ fn get_info(row: u8, column: u8) -> Info {
     }
 }
 
-fn get_sector(index: usize) -> String {
+fn get_sector(index: u8) -> String {
     let sectors = ["X", "I", "II", "III", "IV"];
-    sectors[index].to_string()
+    sectors[index as usize].to_string()
 }
 
-fn get_faction(index: usize) -> String {
+fn get_faction(index: u8) -> String {
     let factions = ["Rojo", "Azul", "Amarillo", "Verde", "Magenta", "Cian"];
-    factions[index].to_string()
+    factions[index as usize].to_string()
 }
 
-fn get_gloss(sector_index: usize, faction_index: usize) -> String {
+fn get_gloss(sector_index: u8, faction_index: u8) -> String {
     let sectors = [
         r#"En el sector Pacha se considera que existen tres planos:
 1) Hanaq pacha, el plano de luz.
@@ -128,5 +130,8 @@ Tienen como símbolo tradicional a dos serpientes que representan al sol y la lu
         "En la facción de Magenta, son cercanos a las montañas.",
         "En la facción de Cian, son cercanos al cielo.",
     ];
-    format!("{}\n\n{}", sectors[sector_index], factions[faction_index])
+    format!(
+        "{}\n\n{}",
+        sectors[sector_index as usize], factions[faction_index as usize]
+    )
 }

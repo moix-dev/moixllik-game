@@ -1,6 +1,5 @@
+use crate::game::App;
 use macroquad::prelude::*;
-
-use crate::game::{App, Mode};
 
 pub fn show_fps(x: f32, y: f32, b: f32) {
     let fps = format!("FPS: {}", get_fps());
@@ -44,9 +43,7 @@ pub fn pointer(app: &mut App, x: f32, y: f32, b: f32) {
 
         if is_mouse_button_released(MouseButton::Left) {
             match app.mode {
-                Mode::Map => {
-                    app.mode_map.pressed(app.row, app.column);
-                }
+                1 => app.mode_map.pressed(app.row, app.column),
                 _ => (),
             }
         }
@@ -117,9 +114,9 @@ pub fn draw_sector_lines(x: f32, y: f32, b: f32) {
     draw_line(x + b * 4.0, y, x + b * 4.0, y + b * 4.0, line, color);
 }
 
-pub fn draw_piece_big(row: f32, column: f32, x: f32, y: f32, b: f32, color: Color) {
-    let x = x + b * (row + 0.5);
-    let y = y + b * (column + 0.5);
+pub fn draw_piece_big(row: u8, column: u8, x: f32, y: f32, b: f32, color: Color) {
+    let x = x + b * (row as f32 + 0.5);
+    let y = y + b * (column as f32 + 0.5);
     draw_circle(x, y, b * 0.42, DARKBROWN);
     draw_circle(x, y, b * 0.4, color);
 }
