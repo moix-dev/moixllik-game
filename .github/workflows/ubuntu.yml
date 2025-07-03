@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Dependencies
+        run: |
+          sudo apt update -y
+          sudo apt install -yq pkg-config libx11-dev libxi-dev libgl1-mesa-dev libasound2-dev
+
       - name: Build
         run: cargo build --release
 
