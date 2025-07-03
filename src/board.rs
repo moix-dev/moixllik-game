@@ -43,7 +43,11 @@ pub fn pointer(app: &mut App, x: f32, y: f32, b: f32) {
 
         if is_mouse_button_released(MouseButton::Left) {
             match app.mode {
-                1 => app.mode_map.pressed(app.row, app.column),
+                1 => match app.mode_map.pressed(xx as u8, yy as u8) {
+                    1 => app.sound.ply = true,
+                    2 => app.sound.badge = true,
+                    _ => (),
+                },
                 _ => (),
             }
         }

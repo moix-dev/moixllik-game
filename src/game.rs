@@ -12,6 +12,8 @@ pub struct App {
     pub column: u8,
     pub focus: bool,
     pub title: String,
+    // Sound
+    pub sound: Sound,
     // Forms
     pub config: Config,
     pub alert: String,
@@ -22,11 +24,31 @@ pub struct App {
     pub mode_map: modes::map::Map,
 }
 
-#[derive(Default)]
+// #[derive(Default)]
 pub struct Config {
+    pub volume: f32,
+    pub disable_audio: bool,
     pub enable_show_fps: bool,
     pub disable_board_title: bool,
     pub enable_marks_scales: bool,
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            volume: 0.5,
+            disable_audio: false,
+            enable_show_fps: false,
+            disable_board_title: false,
+            enable_marks_scales: false,
+        }
+    }
+}
+
+#[derive(Default)]
+pub struct Sound {
+    pub ply: bool,
+    pub badge: bool,
 }
 
 impl App {

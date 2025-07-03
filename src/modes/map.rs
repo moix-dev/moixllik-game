@@ -3,10 +3,10 @@ use macroquad::{prelude::*, rand::ChooseRandom};
 
 #[derive(Default, Debug)]
 pub struct Map {
+    pub board: u64, // uX - 1
     pub invader: Invader,
     pub enable_sector_lines: bool,
     pub enable_faction_colors: bool,
-    pub board: u64, // uX - 1
     // LOG
     pub log: Vec<[u8; 3]>,
     pub log_text: String,
@@ -51,18 +51,27 @@ impl Map {
             }
         }
     }
-    pub fn pressed(&mut self, row: u8, column: u8) {
+
+    #[allow(unused_assignments)]
+    pub fn pressed(&mut self, row: u8, column: u8) -> u8 {
+        let mut event = 0;
         if self.get(row, column) {
             self.action_remove(row, column);
+            event = 3;
         } else {
             self.action_add(row, column);
+            // Point UP!
             if self.invader.row == row && self.invader.column == column {
                 self.invader.points += 1;
                 self.invader.random_move(&self.board);
+                event = 2;
+            } else {
+                event = 1;
             }
         }
         self.invader.show_track(self.log.len(), &self.board);
         self.parser_log();
+        return event;
     }
     fn action_add(&mut self, row: u8, column: u8) {
         self.set(row, column, true);

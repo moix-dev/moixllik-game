@@ -2,6 +2,7 @@ mod board;
 mod forms;
 mod game;
 mod modes;
+mod sound;
 
 use macroquad::miniquad::conf::Icon;
 use macroquad::prelude::*;
@@ -22,7 +23,16 @@ fn window_conf() -> Conf {
 #[macroquad::main(window_conf)]
 async fn main() {
     let mut app = game::App::default();
+    let sound_ply = sound::Sound::new(include_bytes!("../assets/sound/ply.ogg"));
+    let sound_badge = sound::Sound::new(include_bytes!("../assets/sound/badge.ogg"));
     loop {
+        // Audio
+        if !app.config.disable_audio {
+            sound_ply.play(&mut app.sound.ply, false, app.config.volume);
+            sound_badge.play(&mut app.sound.badge, false, app.config.volume);
+        }
+
+        // View
         clear_background(BROWN);
 
         let b = screen_width().min(screen_height()) / 9.0;
