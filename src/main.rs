@@ -28,8 +28,14 @@ async fn main() {
     loop {
         // Audio
         if !app.config.disable_audio {
-            sound_ply.play(&mut app.sound.ply, false, app.config.volume);
-            sound_badge.play(&mut app.sound.badge, false, app.config.volume);
+            if app.sound.ply {
+                sound_ply.play(app.config.volume, false);
+                app.sound.ply = false;
+            }
+            if app.sound.badge {
+                sound_badge.play(app.config.volume, false);
+                app.sound.badge = false;
+            }
         }
 
         // View
@@ -45,9 +51,6 @@ async fn main() {
         if app.config.enable_show_fps {
             board::show_fps(x, y, b);
         }
-        if !app.config.disable_board_title {
-            board::draw_title(x, y, b, app.title.as_str());
-        }
         if !app.config.enable_marks_scales {
             board::draw_marks_scales(x, y, b);
         }
@@ -57,7 +60,9 @@ async fn main() {
         }
         match app.mode {
             1 => {
-                app.title = app.mode_map.invader.message.clone();
+                if !app.config.disable_board_title {
+                    board::draw_title(x, y, b, app.mode_map.invader.message.as_str(), WHITE);
+                }
                 if app.mode_map.enable_sector_lines {
                     board::draw_sector_lines(x, y, b);
                 }

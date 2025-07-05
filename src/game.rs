@@ -11,7 +11,6 @@ pub struct App {
     pub row: u8,
     pub column: u8,
     pub focus: bool,
-    pub title: String,
     // Sound
     pub sound: Sound,
     // Forms

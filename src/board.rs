@@ -54,8 +54,8 @@ pub fn pointer(app: &mut App, x: f32, y: f32, b: f32) {
     }
 }
 
-pub fn draw_title(x: f32, y: f32, b: f32, text: &str) {
-    draw_text(text, x, y - b * 0.35, b * 0.3, WHITE);
+pub fn draw_title(x: f32, y: f32, b: f32, text: &str, color: Color) {
+    draw_text(text, x, y - b * 0.35, b * 0.3, color);
 }
 
 pub fn draw_marks_scales(x: f32, y: f32, b: f32) {
