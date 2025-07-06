@@ -125,14 +125,14 @@ pub fn draw_piece_big(row: u8, column: u8, x: f32, y: f32, b: f32, color: Color)
     draw_circle(cx, cy, b * 0.4, color);
 }
 
-pub fn _draw_piece_small(row: u8, column: u8, x: f32, y: f32, b: f32, color: Color) {
+pub fn draw_piece_small(row: u8, column: u8, x: f32, y: f32, b: f32, color: Color) {
     let cx = x + b * (row as f32 + 0.25);
     let cy = y + b * (column as f32 + 0.25);
     draw_circle(cx, cy, b * 0.22, DARKBROWN);
     draw_circle(cx, cy, b * 0.2, color);
 }
 
-pub fn _draw_piece_runa(
+pub fn draw_piece_runa(
     row: u8,
     column: u8,
     x: f32,

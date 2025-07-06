@@ -21,6 +21,10 @@ pub struct App {
     // Modes
     pub mode: u8,
     pub mode_map: modes::map::Map,
+    pub mode_math: modes::math::Math,
+    pub mode_andes: modes::andes::Andes,
+    #[cfg(not(target_arch = "wasm32"))]
+    pub mode_streamer: modes::streamer::Streamer,
 }
 
 // #[derive(Default)]
@@ -165,6 +169,16 @@ impl App {
         // 2X: Modos de juego
         if self.is_open_form(20) {
             forms::mode_map::show(self, egui_ctx);
+        }
+        if self.is_open_form(21) {
+            forms::mode_math::show(self, egui_ctx);
+        }
+        if self.is_open_form(22) {
+            forms::mode_andes::show(self, egui_ctx);
+        }
+        #[cfg(not(target_arch = "wasm32"))]
+        if self.is_open_form(23) {
+            forms::mode_streamer::show(self, egui_ctx);
         }
         // 4X: Ayuda
         if self.is_open_form(40) {
