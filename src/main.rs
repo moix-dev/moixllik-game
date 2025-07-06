@@ -68,9 +68,21 @@ async fn main() {
                 }
                 app.mode_map.draw(x, y, b);
             }
+            2 => {
+                // board::draw_piece_small(3, 3, x, y, b, BLACK);
+                // board::draw_piece_small(3, 3, x + b * 0.5, y + b * 0.5, b, WHITE);
+            }
+            3 => {
+                // board::draw_piece_runa(3, 3, x, y, b, BLACK, 0, LIGHTGRAY);
+                // board::draw_piece_runa(2, 3, x, y, b, BLACK, 1, LIGHTGRAY);
+                // board::draw_piece_runa(4, 3, x, y, b, BLACK, 2, LIGHTGRAY);
+
+                // board::draw_piece_runa(3, 3, x, y, b, WHITE, 0, DARKGRAY);
+                // board::draw_piece_runa(2, 3, x, y, b, WHITE, 1, DARKGRAY);
+                // board::draw_piece_runa(4, 3, x, y, b, WHITE, 2, DARKGRAY);
+            }
             _ => (),
         }
-
         // Forms
         app.start(x, y, b);
 

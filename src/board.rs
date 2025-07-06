@@ -119,8 +119,35 @@ pub fn draw_sector_lines(x: f32, y: f32, b: f32) {
 }
 
 pub fn draw_piece_big(row: u8, column: u8, x: f32, y: f32, b: f32, color: Color) {
+    let cx = x + b * (row as f32 + 0.5);
+    let cy = y + b * (column as f32 + 0.5);
+    draw_circle(cx, cy, b * 0.42, DARKBROWN);
+    draw_circle(cx, cy, b * 0.4, color);
+}
+
+pub fn _draw_piece_small(row: u8, column: u8, x: f32, y: f32, b: f32, color: Color) {
+    let cx = x + b * (row as f32 + 0.25);
+    let cy = y + b * (column as f32 + 0.25);
+    draw_circle(cx, cy, b * 0.22, DARKBROWN);
+    draw_circle(cx, cy, b * 0.2, color);
+}
+
+pub fn _draw_piece_runa(
+    row: u8,
+    column: u8,
+    x: f32,
+    y: f32,
+    b: f32,
+    color: Color,
+    direction: u8,
+    color_direction: Color,
+) {
+    draw_piece_big(row, column, x, y, b, color);
     let x = x + b * (row as f32 + 0.5);
     let y = y + b * (column as f32 + 0.5);
-    draw_circle(x, y, b * 0.42, DARKBROWN);
-    draw_circle(x, y, b * 0.4, color);
+    match direction {
+        1 => draw_circle(x, y + b * 0.3, b * 0.1, color_direction),
+        2 => draw_circle(x - b * 0.3, y, b * 0.1, color_direction),
+        _ => draw_circle(x, y - b * 0.3, b * 0.1, color_direction),
+    }
 }
