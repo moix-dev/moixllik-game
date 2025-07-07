@@ -61,7 +61,7 @@ async fn main() {
         match app.mode {
             1 => {
                 if !app.config.disable_board_title {
-                    board::draw_title(x, y, b, app.mode_map.invader.message.as_str(), WHITE);
+                    board::draw_title(x, y, b, &app.mode_map.invader.message, WHITE);
                 }
                 if app.mode_map.enable_sector_lines {
                     board::draw_sector_lines(x, y, b);
@@ -69,6 +69,10 @@ async fn main() {
                 app.mode_map.draw(x, y, b);
             }
             2 => {
+                if !app.config.disable_board_title {
+                    board::draw_title(x, y, b, &app.mode_math.moon_title, BLACK);
+                    board::draw_title(x + b * 3.0, y, b, &app.mode_math.sun_title, WHITE);
+                }
                 app.mode_math.draw(x, y, b);
             }
             3 => {

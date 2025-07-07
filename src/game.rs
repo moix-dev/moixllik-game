@@ -157,7 +157,7 @@ impl App {
                     ui.separator();
                     ui.hyperlink_to("Discord", "https://discord.gg/6me7JYRwS2");
                     ui.separator();
-                    ui.label(egui::RichText::new(self.alert.as_str()).color(egui::Color32::RED));
+                    ui.label(egui::RichText::new(&self.alert).color(egui::Color32::RED));
                 });
             });
             self.show_forms(egui_ctx);

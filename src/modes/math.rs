@@ -2,7 +2,10 @@ use crate::board::draw_piece_small;
 use macroquad::prelude::*;
 
 #[derive(Default, Debug)]
-pub struct Math {}
+pub struct Math {
+    pub sun_title: String,
+    pub moon_title: String,
+}
 
 impl Math {
     pub fn set(&mut self) {}
