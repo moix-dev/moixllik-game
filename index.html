@@ -46,7 +46,7 @@
       'https://cdn.moix.cc/quad/audio.js',
       'https://cdn.moix.cc/quad/gl.js',
     ];
-    message.innerText = 'Cargando...\n';
+    message.innerText = 'Cargando componentes...\n';
     function loading() {
       const lib = libs.pop();
       if (lib) {
@@ -60,8 +60,9 @@
         };
         document.head.appendChild(script);
       } else {
-        message.innerText = '';
+        message.innerText += '\n\nCargando juego...';
         load("./pkg/app.wasm");
+        setTimeout(_ => {message.innerText = '';}, 1000);
       }
     }
     loading();
