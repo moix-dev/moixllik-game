@@ -9,9 +9,9 @@ use macroquad::prelude::*;
 
 fn window_conf() -> Conf {
     Conf {
-        window_title: "Moixllik".to_string(),
+        window_title: "Moixllik - Juegos e Historias de los Andes".to_string(),
         icon: Some(Icon {
-            // convert icon_x.png -depth 8 RGBA:icon_x.raw
+            //$> convert icon_x.png -depth 8 RGBA:icon_x.raw
             small: include_bytes!("../assets/icon_16.raw").clone(),
             medium: include_bytes!("../assets/icon_32.raw").clone(),
             big: include_bytes!("../assets/icon_64.raw").clone(),

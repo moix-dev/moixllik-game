@@ -8,5 +8,5 @@ build:
     wasm-opt -Oz -o pkg/app.wasm target/wasm32-unknown-unknown/release/moixllik-game.wasm
     llvm-strip pkg/app.wasm
 
-serv:
+srv:
     basic-http-server .

@@ -103,7 +103,7 @@ impl App {
                         if ui.button("Escuelas").clicked() {
                             self.open_form(14);
                         }
-                        if ui.button("Rankings").clicked() {
+                        if ui.button("Ranking").clicked() {
                             self.open_form(15);
                         }
                     });
@@ -156,6 +156,8 @@ impl App {
                     ui.hyperlink_to("Tienda", "https://ko-fi.com/moixllik/shop");
                     ui.separator();
                     ui.hyperlink_to("Discord", "https://discord.gg/6me7JYRwS2");
+                    ui.separator();
+                    ui.hyperlink_to("Developer", "https://www.moix.cc/");
                     ui.separator();
                     ui.label(egui::RichText::new(&self.alert).color(egui::Color32::RED));
                 });

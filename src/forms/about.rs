@@ -14,15 +14,15 @@ El contenido de la biblioteca no es históricamente exacto.
         ui.heading("¿Qué son los modos de juego?");
         ui.label(
             r#"
-Los modos de juego son una reinterpretación del juego o herramienta andina yupana, usado para el cálculo matemático.
+Los modos de juego son una reinterpretación del juego o herramienta andina Yupana, usado para el cálculo matemático.
 
 Los modos soportados:
 
-- Moix Map, es el modo mapa que sirve para enriquecer las historias de la biblioteca.
+- Modo Mapa, sirve para enriquecer las historias de la biblioteca.
 
-- Moix Math, es el modo matemático funciona como una versión digital de la yupana.
+- Modo Matemático, funciona como una versión digital de la Yupana.
 
-- Moix Andes, es un modo de juego en el tablero enfocado en la estrategia.
+- Modo Andes, estrategia por turnos en el tablero.
 "#
         );
         #[cfg(not(target_arch = "wasm32"))]

@@ -1,72 +1,77 @@
 <!doctype html>
 <html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta
+            name="description"
+            content="Una colección de juegos e historias inspiradas en las culturas de los Andes."
+        />
+        <title>Moixllik - Juegos e Historias de los Andes</title>
+        <style>
+            html,
+            body,
+            canvas {
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+                color: white;
+                overflow: hidden;
+                position: absolute;
+                text-align: center;
+            }
+            html,
+            body,
+            canvas {
+                background: #000;
+            }
+        </style>
+    </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <link rel="icon" href="assets/icon.svg" type="image/svg+xml" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Una colección de juegos e historias inspiradas en las culturas de los Andes." />
-  <title>Moixllik - Juegos e Historias de los Andes</title>
-  <style>
-    html,
-    body,
-    canvas {
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      color: white;
-      overflow: hidden;
-      position: absolute;
-      text-align: center;
-    }
-
-    html,
-    body {
-      background: #000;
-    }
-  </style>
-</head>
-
-<body>
-  <noscript>
-    <p>Se requiere un navegador con JavaScript.</p>
-  </noscript>
-  <pre id="message"></pre>
-  <canvas id="glcanvas" tabindex="1"></canvas>
-  <script>
-    const message = document.getElementById("message");
-    const libs = [
-      'https://cdn.moix.cc/quad/quad-url.js',
-      'https://cdn.moix.cc/quad/sapp_jsutils.js',
-      'https://cdn.moix.cc/quad/audio.js',
-      'https://cdn.moix.cc/quad/gl.js',
-    ];
-    message.innerText = 'Cargando componentes...\n';
-    function loading() {
-      const lib = libs.pop();
-      if (lib) {
-        const script = document.createElement('script');
-        script.src = lib;
-        script.onload = _ => {
-          const {pathname} = new URL(lib);
-          const filename = pathname.substring(pathname.lastIndexOf('/') + 1);
-          message.innerText += filename + '\n';
-          loading();
-        };
-        document.head.appendChild(script);
-      } else {
-        message.innerText += '\n\nCargando juego...';
-        load("./pkg/app.wasm");
-        setTimeout(_ => {message.innerText = '';}, 1000);
-      }
-    }
-    loading();
-  </script>
-</body>
-
+    <body>
+        <noscript>
+            <p>Se requiere un navegador con JavaScript.</p>
+        </noscript>
+        <pre id="message"></pre>
+        <canvas id="glcanvas" tabindex="1"></canvas>
+        <script>
+            const message = document.getElementById("message");
+            const libs = [
+                "https://cdn.moix.cc/quad/quad-url.js",
+                "https://cdn.moix.cc/quad/sapp_jsutils.js",
+                "https://cdn.moix.cc/quad/audio.js",
+                "https://cdn.moix.cc/quad/gl.js",
+            ];
+            message.innerText = "Cargando componentes...\n";
+            function loading() {
+                const lib = libs.pop();
+                if (lib) {
+                    const script = document.createElement("script");
+                    script.src = lib;
+                    script.onload = (_) => {
+                        const { pathname } = new URL(lib);
+                        const filename = pathname.substring(
+                            pathname.lastIndexOf("/") + 1,
+                        );
+                        message.innerText += filename + "\n";
+                        loading();
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    message.innerText += "\n\nCargando juego...";
+                    load("./pkg/app.wasm");
+                    setTimeout((_) => {
+                        message.innerText = "";
+                    }, 1000);
+                }
+            }
+            loading();
+        </script>
+    </body>
 </html>

@@ -12,7 +12,10 @@ impl Math {
     pub fn get(&mut self) {}
     pub fn clear(&mut self) {}
     pub fn draw(&mut self, x: f32, y: f32, b: f32) {
-        // draw_piece_small(3, 3, x, y, b, BLACK);
-        // draw_piece_small(3, 3, x + b * 0.5, y + b * 0.5, b, WHITE);
+        draw_piece_small(3, 3, x, y, b, BLACK);
+        draw_piece_small(3, 3, x, y + b * 0.5, b, BLACK);
+
+        draw_piece_small(3, 3, x + b * 0.5, y, b, WHITE);
+        draw_piece_small(3, 3, x + b * 0.5, y + b * 0.5, b, WHITE);
     }
 }
