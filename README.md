@@ -4,7 +4,8 @@
 
 * **Jugador**
 * **Modo de juego**
-  * **Modo Map**
+  * **Modo Mapa**
+  * **Modo Matemático**
 * **Descargar** (Solo en Web)
   * **Desde GitHub**
 * **Ayuda**

@@ -29,9 +29,9 @@ pub fn draw(x: f32, y: f32, b: f32) {
     draw_rectangle(x + b, y + b * 2.0, b * 5.0, b * 3.0, color);
 }
 
-pub fn pointer(app: &mut App, x: f32, y: f32, b: f32) {
+pub fn pointer(app: &mut App, x: f32, y: f32, b: f32, c: f32) {
     let (mx, my) = mouse_position();
-    if (mx >= x && mx <= x + b * 7.0) && (my >= y && my <= y + b * 7.0) {
+    if (mx >= x && mx <= x + b * c) && (my >= y && my <= y + b * c) {
         let color = Color::from_rgba(0, 0, 0, 100);
         let xx = ((mx - x) / b).trunc();
         let yy = ((my - y) / b).trunc();
@@ -46,6 +46,10 @@ pub fn pointer(app: &mut App, x: f32, y: f32, b: f32) {
                 1 => match app.mode_map.pressed(xx as u8, yy as u8) {
                     1 => app.sound.ply = true,
                     2 => app.sound.badge = true,
+                    _ => (),
+                },
+                2 => match app.mode_math.pressed(xx as u8, yy as u8) {
+                    1 => app.sound.ply = true,
                     _ => (),
                 },
                 _ => (),
@@ -95,6 +99,22 @@ pub fn draw_marks_scales(x: f32, y: f32, b: f32) {
     }
 }
 
+pub fn draw_marks_values(x: f32, y: f32, b: f32) {
+    let color = BLACK;
+    let font_size = b * 0.5;
+    let marks = ["1", "2", "3", "5", "3", "2", "1"];
+    for scale in 0..7 {
+        let i = scale as f32;
+        draw_text(
+            marks[6 - scale],
+            x + b * (i + 0.25),
+            y + b * 7.4,
+            font_size,
+            color,
+        );
+    }
+}
+
 pub fn draw_sector_lines(x: f32, y: f32, b: f32) {
     let color = DARKBROWN;
     let line = b * 0.05;
@@ -126,8 +146,8 @@ pub fn draw_piece_big(row: u8, column: u8, x: f32, y: f32, b: f32, color: Color)
 }
 
 pub fn draw_piece_small(row: u8, column: u8, x: f32, y: f32, b: f32, color: Color) {
-    let cx = x + b * (row as f32 + 0.25);
-    let cy = y + b * (column as f32 + 0.25);
+    let cx = x + b * (row as f32 / 2.0 + 0.25);
+    let cy = y + b * (column as f32 / 2.0 + 0.25);
     draw_circle(cx, cy, b * 0.22, DARKBROWN);
     draw_circle(cx, cy, b * 0.2, color);
 }

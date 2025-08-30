@@ -30,7 +30,8 @@ impl Map {
         }
     }
     fn get(&mut self, row: u8, column: u8) -> bool {
-        self.board & (1 << (row * 7 + column)) != 0
+        let mask = row * 7 + column;
+        self.board & (1 << mask) != 0
     }
     pub fn clear(&mut self) {
         self.log.clear();
@@ -71,7 +72,8 @@ impl Map {
         }
         self.invader.show_track(self.log.len(), &self.board);
         self.parser_log();
-        return event;
+
+        event
     }
     fn action_add(&mut self, row: u8, column: u8) {
         self.set(row, column, true);

@@ -56,7 +56,10 @@ async fn main() {
         }
         // Modes
         if !app.focus {
-            board::pointer(&mut app, x, y, b);
+            match app.mode {
+                2 => board::pointer(&mut app, x, y, b / 2.0, 14.0),
+                _ => board::pointer(&mut app, x, y, b, 7.0),
+            };
         }
         match app.mode {
             1 => {
@@ -72,6 +75,9 @@ async fn main() {
                 if !app.config.disable_board_title {
                     board::draw_title(x, y, b, &app.mode_math.moon_title, BLACK);
                     board::draw_title(x + b * 3.0, y, b, &app.mode_math.sun_title, WHITE);
+                }
+                if app.mode_math.enable_values {
+                    board::draw_marks_values(x, y, b);
                 }
                 app.mode_math.draw(x, y, b);
             }
