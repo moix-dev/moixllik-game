@@ -9,6 +9,9 @@ pub struct Math {
     pub moon_value: u32,
     pub moon_title: String,
     pub enable_values: bool,
+    // Log
+    pub scale_random: i32,
+    pub log_text: String,
 }
 
 impl Math {
@@ -31,6 +34,11 @@ impl Math {
     pub fn clear(&mut self) {
         *self = Math::default();
     }
+    pub fn clear_board(&mut self) {
+        self.board = [0; 4];
+        self.sun_value = 0;
+        self.moon_value = 0;
+    }
     pub fn draw(&mut self, x: f32, y: f32, b: f32) {
         self.sun_title = to_title(&self.sun_value);
         self.moon_title = to_title(&self.moon_value);
@@ -44,7 +52,6 @@ impl Math {
             }
         }
     }
-
     #[allow(unused_assignments)]
     pub fn pressed(&mut self, row: u8, column: u8) -> u8 {
         let mut event = 0;
@@ -60,14 +67,12 @@ impl Math {
 
         event
     }
-
     fn action_add(&mut self, row: u8, column: u8) {
         self.set(row, column, true);
     }
     fn action_remove(&mut self, row: u8, column: u8) {
         self.set(row, column, false);
     }
-
     fn calculate(&mut self) {
         let marks = [1, 2, 3, 5, 3, 2, 1];
         let mut sun_value = 0;
@@ -91,6 +96,15 @@ impl Math {
 
         self.sun_value = sun_value;
         self.moon_value = moon_value;
+    }
+    pub fn generate_random(&mut self) {
+        let max = 10_i32.pow((self.scale_random + 1) as u32) - 1;
+        let random = macroquad::rand::gen_range(0, max + 1) as u32;
+        if random > 0 {
+            self.log_text = format!("{}\n{}", to_title(&random), self.log_text);
+        } else {
+            self.generate_random();
+        }
     }
 }
 

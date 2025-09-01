@@ -52,7 +52,6 @@ impl Map {
             }
         }
     }
-
     #[allow(unused_assignments)]
     pub fn pressed(&mut self, row: u8, column: u8) -> u8 {
         let mut event = 0;
