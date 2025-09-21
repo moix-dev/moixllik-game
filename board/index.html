@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moixllik Game</title>
+    <link rel="stylesheet" href="/assets/style.css">
+    <link rel="shortcut icon" href="/assets/icon.svg" type="image/svg+xml">
+</head>
+
+<body>
+    <canvas id="board"></canvas>
+    <div id="bar-top" class="bar none">
+        <a href="/" class="btn">&laquo;</a>
+        <h4></h4>
+        <div class="parents">
+            <button class="sun" data-name="sun"></button>
+            <button class="moon" data-name="moon"></button>
+        </div>
+    </div>
+    <div id="bar-bottom" class="bar bottom none"></div>
+    <div id="main-menu" class="main-menu">
+        <a class="brand" href="/">MOIXLLIK</a>
+        <menu>
+            <a href="#andes">Andes</a>
+            <a href="#map">Explorar</a>
+            <a href="#math">Matemáticas</a>
+            <a href="https://discord.gg/6me7JYRwS2" target="_blank">Discord</a>
+        </menu>
+    </div>
+
+    <audio id="sound-ply">
+        <source src="/assets/sound/ply.ogg" type="audio/ogg">
+        <source src="/assets/sound/ply.mp3" type="audio/mpeg">
+    </audio>
+    <audio id="sound-badge">
+        <source src="/assets/sound/badge.ogg" type="audio/ogg">
+        <source src="/assets/sound/badge.mp3" type="audio/mpeg">
+    </audio>
+
+    <script src="/assets/js/board.js"></script>
+    <script src="/board/main.js"></script>
+</body>
+
+</html>
